@@ -1,115 +1,136 @@
-<h1 align="center">Licensing Desk for Claude Code</h1>
+# Licensing Desk for Claude Code
 
-<p align="center">
-  <strong>The open-source licensing desk that is just a database and Claude Code.</strong>
-</p>
+Applications, evidence, inspections, officer decisions, licence records and conditions in a database you own. MIT code from Enterprise DNA. Works with Claude Code, Codex, OpenCode or Cursor.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free code. Clone, install and run the demo. Hosting and coding-agent costs are yours. | Your permit types, evidence rules, Salesforce records and working papers. [Get your version built](https://enterprisedna.co/omni/book?offer=replace-software&utm_campaign=salesforce-license-permit-management&utm_medium=readme). | Installed and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [Book a call](https://enterprisedna.co/omni/book?offer=replace-software&utm_campaign=salesforce-license-permit-management&utm_medium=readme). |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Salesforce License and Permit Management data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=salesforce-license-permit-management">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/salesforce-license-permit-management?utm_source=github&utm_medium=readme&utm_campaign=salesforce-license-permit-management">How it works</a></td>
-  </tr>
-</table>
+## The internal licensing desk
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-salesforce-license-permit-management">Instead of Salesforce License and Permit Management</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+A licensing team reviews incoming applications, requests missing evidence, schedules inspection work, prepares decision papers and checks upcoming renewals. This build holds that work. It records an officer's existing decision and licence document. It does not grant statutory permission or replace the full Salesforce Public Sector platform.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Licensing Desk for Claude Code does the job you pay Salesforce License and Permit Management for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Salesforce License and Permit Management dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Salesforce License and Permit Management per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=salesforce-license-permit-management).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+Salesforce lists Public Sector Service Core at US$275 per user per month, billed annually. Ten users illustrate US$33,000 a year. This is base-platform list pricing, not a verified customer invoice or a complete licensing-project quote. [Salesforce pricing](https://www.salesforce.com/government/solutions/pricing/), checked 16 October 2026.
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 20 or newer. No database server is needed for the embedded demo.
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/licensing-desk-for-claude-code.git
 cd licensing-desk-for-claude-code
 npm install
+npm test
 npm run demo
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+All applicants, authorities and evidence references are fictional. The demo ignores DATABASE_URL and writes to .data/demo. It includes an overdue application, an expired document, a failed inspection, an unconfigured permit type and a licence with a condition review overdue.
 
-### Use it with your own Postgres or Supabase
+Subsequent demo queries on Linux or macOS:
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+```bash
+DATA_DIR=.data/demo node scripts/desk.mjs intake-queue
+DATA_DIR=.data/demo node scripts/desk.mjs decision-ready
+DATA_DIR=.data/demo node scripts/desk.mjs insights --json
+```
 
-## The commands
+On PowerShell set `$env:DATA_DIR='.data/demo'`, then run the commands without the DATA_DIR prefix. Use a fresh DATA_DIR and npm run migrate without seed for your records. DATABASE_URL selects a controlled PostgreSQL database.
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+## Recurring work
 
-| Command | What it does |
+| Command | Result |
 |---|---|
-| `/...` | ... |
+| `/applicants` | List applicants, owners and record review dates. |
+| `/types` | List permit types and their reviewed policy references. |
+| `/requirements` | List required evidence by permit type. |
+| `/applications` | List application records and internal targets. |
+| `/intake-queue` | Review open applications oldest first. |
+| `/evidence-due` | List missing, expired, rejected and stale evidence. |
+| `/inspections` | Read inspection dates, outcomes and report references. |
+| `/inspection-week` | Prepare overdue and upcoming inspections. |
+| `/decision-ready` | List complete administrative packs for officer review. |
+| `/decisions` | Read recorded officer decisions and their source references. |
+| `/licences` | Read licence records and expiry dates. |
+| `/renewals-due` | Review licences due within sixty days, including expired ones. |
+| `/conditions` | Read licence conditions and their evidence. |
+| `/conditions-due` | Prepare condition reviews due this week. |
+| `/attention` | Read the combined overdue and evidence queue. |
+| `/workload` | Compare officer workload, targets and evidence gaps. |
+| `/compliance` | Check record accuracy, retention reviews, evidence and local policy. |
+| `/history` | Read the CLI audit history. |
+| `/application` | Read a complete application file before acting. |
+| `/insights` | Answer ten questions across the licensing records. |
+| `/add` | Add an applicant, type, requirement, application, evidence item, inspection or condition. |
+| `/configure-type` | Freeze a reviewed local policy with its evidence requirements. |
+| `/verify-applicant` | Record the accuracy check an operator has actually performed. |
+| `/check-evidence` | Record acceptance or rejection of a document the officer reviewed. |
+| `/complete-inspection` | Record an actual inspection outcome and report reference. |
+| `/record-decision` | Record an existing officer decision after the administrative checks. |
+| `/record-licence` | Record the existing licence document after an approved decision. |
+| `/satisfy-condition` | Record the evidence satisfying a licence condition. |
+| `/log` | Add a factual application note. |
+| `/import` | Validate and import the mapped Salesforce detail reports. |
+| `/export` | Export every domain record, audit event and original source row. |
+| `/weekly-review` | Draft the Monday review from workload, attention and compliance. |
+| `/draft-evidence` | Draft an evidence follow-up from the actual application file. |
+| `/draft-decision` | Draft an internal decision review paper from recorded facts. |
+| `/view` | Render the week, decision desk and renewal dashboards. |
+| `/documents` | Render application packs, evidence requests and renewal review papers. |
+| `/customise` | Add a field or change an agreed rule through a new migration. |
+| `/new-view` | Add a read-only view for a new question. |
 
-## Instead of salesforce-license-permit-management
+## Ten questions across the records
 
-<!-- TODO(author): how to bring data across from Salesforce License and Permit Management; link docs/replace-salesforce-license-permit-management.md -->
+Run node scripts/desk.mjs insights. Each question is answered by a real query in this build. These are questions beyond a fixed dashboard, not claims that a configured Salesforce report can never answer them.
 
-## Architecture
+1. Which owners have overdue applications and missing evidence?
+2. Which applications are ready for an officer to review?
+3. Which requirements are causing the most gaps?
+4. Which applicants have multiple open applications?
+5. Which upcoming renewals still have conditions to review?
+6. Which inspections are holding up an otherwise complete evidence pack?
+7. Which complete packs need an applicant accuracy review?
+8. Which permit types lack a documented local policy?
+9. Which approvals have no licence record yet?
+10. Which expired evidence sits on an overdue application?
 
+## Your first hour: ten things to ask for
+
+1. Show the oldest applications waiting for an officer.
+2. Read the complete Spring community market file.
+3. Which evidence is missing or expired?
+4. Prepare this week's inspection list.
+5. Which packs have passed the recorded administrative checks?
+6. Show renewals with conditions still open.
+7. Draft the Monday review.
+8. Draft an evidence request for APP-101.
+9. Test our mapped Salesforce report folder without changing records.
+10. Add our district field and a read-only district workload report.
+
+## Branded working papers and views
+
+npm run docs produces application review packs, evidence-request drafts and renewal-review papers. npm run view produces the week, decision desk and renewal dashboards. Set the name, logo and colours once in brand.json. The output is read-only HTML that can be opened or printed. Drafts stay local. No message sends and no legal licence certificate is generated.
+
+## Import and export
+
+```bash
+node scripts/desk.mjs import salesforce --dir=examples/salesforce --dry-run --actor="Operator"
+node scripts/desk.mjs import salesforce --dir=examples/salesforce --actor="Operator"
+node scripts/desk.mjs export --out=licensing-backup.json --json
 ```
-licensing-desk-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
 
-## Built for coding agents
+The importer takes mapped Details Only CSV reports for applicants, permit types and applications in one transaction. It preserves original rows, accepts unchanged reimports and stops on changed source rows. It does not import arbitrary Salesforce backups or historical approvals. Applicants start unverified, types start unconfigured and applications start open. See [the switch guide](docs/replace-salesforce-license-permit-management.md) for the exact mapping and separate work for licences, inspections, evidence, fees and legacy history.
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+## Controls and scope
 
-## Contributing
+[Record checks](docs/compliance.md) cover missing accuracy checks, retention review reminders, documented local policy and required evidence. An approved decision record requires those checks, completed inspections, a source reference and an explicit officer confirmation. Statutory clocks and legal eligibility remain the authority's responsibility. A configured policy is frozen. An existing decision stays unchanged. A renewal is a new application.
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+The code runs without a portal, mobile app, offline sync, live Salesforce connection, payments or automatic notices. [Why no front end](docs/why-no-front-end.md) describes this shape and what a managed version can add. Database owners can change records directly. Actor text is not identity verification and the audit is not tamper-proof. Shared use needs reviewed access, backups, protected evidence storage and jurisdiction-specific rules.
 
-## Want it installed and run for you?
+## Verification
 
-Enterprise DNA installs Licensing Desk for Claude Code for your business, migrates your Salesforce License and Permit Management data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+npm test creates and removes a temporary database. It exercises every domain command, the import and export, decision gates, stale evidence, ambiguous names, date checks, rollback, source-change rejection, drafts and escaped HTML. CI runs Node 20 and 22 on Windows and Linux, plus PostgreSQL 17. TEST_DATABASE_URL must identify a disposable test database; the suite creates and removes its own schema.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=salesforce-license-permit-management)
-- Read more: [enterprisedna.co/omni/instead-of/salesforce-license-permit-management](https://enterprisedna.co/omni/instead-of/salesforce-license-permit-management?utm_source=github&utm_medium=readme&utm_campaign=salesforce-license-permit-management)
+## Licence
 
-## License
-
-MIT. Copyright (c) 2026 Enterprise DNA.
+MIT. Copyright (c) 2026 Enterprise DNA. Salesforce is a trademark of Salesforce, Inc. This independent project is not affiliated with or endorsed by Salesforce.

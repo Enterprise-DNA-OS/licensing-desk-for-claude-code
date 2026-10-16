@@ -1,11 +1,61 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "application-pack",
+    "title": "Application review pack: internal draft",
+    "for_each": "select id,code from applications order by code",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Application",
+        "sql": "select code,name,applicant,permit_type,owner,status,received_on,target_on from application_readiness where id=$1",
+        "note": "No statutory approval is conferred by this document."
+      },
+      {
+        "title": "Evidence checklist",
+        "sql": "select requirement,finding from evidence_gaps where application_id=$1 order by requirement"
+      },
+      {
+        "title": "Inspection record",
+        "sql": "select code,name,inspector,due_on,outcome,report_ref from inspections where application_id=$1 order by code"
+      },
+      {
+        "title": "Recorded decision",
+        "sql": "select outcome,decided_on,decision_ref,reason,actor from decisions where application_id=$1"
+      }
+    ]
+  },
+  {
+    "name": "evidence-request",
+    "title": "Evidence request: draft for officer review",
+    "for_each": "select id,code from applications where status='open' order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Application and applicant",
+        "sql": "select code,name,applicant,owner from application_readiness where id=$1"
+      },
+      {
+        "title": "Please review these outstanding items",
+        "sql": "select requirement,finding from evidence_gaps where application_id=$1 and finding<>'Complete' order by requirement",
+        "note": "Confirm the request wording and applicable authority before sending. This draft has not been sent."
+      }
+    ]
+  },
+  {
+    "name": "renewal-review",
+    "title": "Licence renewal review: internal draft",
+    "for_each": "select id,code from licences where expires_on<=CURRENT_DATE+60 order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Licence record",
+        "sql": "select code,application,applicant,permit_type,owner,issued_on,expires_on,days_left from renewal_queue where id=$1"
+      },
+      {
+        "title": "Conditions",
+        "sql": "select code,name,owner,review_on,status,evidence_ref from conditions where licence_id=$1 order by code",
+        "note": "A renewal requires a new application and an officer decision. This paper neither renews a licence nor records payment."
+      }
     ]
   }
 ]

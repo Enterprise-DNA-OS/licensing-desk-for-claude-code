@@ -1,13 +1,44 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Licensing Desk for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Licensing desk: this week",
+    "subtitle": "Internal target dates are local policy, not statutory clocks.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Officer workload",
+        "sql": "select owner,count(*) as open_applications,count(*) filter(where days_left<0) as overdue_targets from application_readiness where status='open' group by owner order by owner"
+      },
+      {
+        "title": "Attention",
+        "sql": "select * from attention_queue order by due_on,record,issue"
+      }
+    ]
+  },
+  {
+    "name": "decision-desk",
+    "title": "Decision preparation",
+    "sections": [
+      {
+        "title": "Application checks",
+        "sql": "select code,applicant,owner,evidence_gaps,inspection_gaps,policy_gap,applicant_gap from application_readiness where status='open' order by code"
+      },
+      {
+        "title": "Evidence gaps",
+        "sql": "select application,requirement,finding from evidence_gaps where finding<>'Complete' order by application,requirement"
+      }
+    ]
+  },
+  {
+    "name": "renewals",
+    "title": "Renewals and conditions",
+    "sections": [
+      {
+        "title": "Next sixty days",
+        "sql": "select code,applicant,owner,expires_on,days_left,open_conditions from renewal_queue where days_left<=60 order by expires_on,code"
+      },
+      {
+        "title": "Conditions to review",
+        "sql": "select code,name,owner,review_on from conditions where status='open' order by review_on,code"
       }
     ]
   }
